@@ -4,8 +4,6 @@
  */
 package com.ertu.proje3;
 
-import com.sun.source.tree.WhileLoopTree;
-
 /**
  *
  * @author ergul
