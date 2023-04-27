@@ -45,8 +45,9 @@ public class GameScene extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         p1UnameLabel = new javax.swing.JLabel();
         p2UnameLabel = new javax.swing.JLabel();
-        scoreBoardButton = new javax.swing.JButton();
         passMoveButton = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        playerTurnLabel = new javax.swing.JLabel();
         gamePanel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -84,8 +85,6 @@ public class GameScene extends javax.swing.JFrame {
         p2UnameLabel.setText("jLabel5");
         p2UnameLabel.setEnabled(false);
 
-        scoreBoardButton.setText("Scoreboard");
-
         passMoveButton.setText("Pass");
         passMoveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -93,23 +92,32 @@ public class GameScene extends javax.swing.JFrame {
             }
         });
 
+        jLabel4.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel4.setText("Current Turn:");
+
+        playerTurnLabel.setForeground(new java.awt.Color(0, 0, 0));
+        playerTurnLabel.setText("Black");
+
         javax.swing.GroupLayout controlPanelLayout = new javax.swing.GroupLayout(controlPanel);
         controlPanel.setLayout(controlPanelLayout);
         controlPanelLayout.setHorizontalGroup(
             controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(controlPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addContainerGap(14, Short.MAX_VALUE)
+                .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(controlPanelLayout.createSequentialGroup()
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(sizeSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(scoreBoardButton, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(36, 36, 36)
+                    .addGroup(controlPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(playerTurnLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(18, 27, Short.MAX_VALUE)
                 .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(newGameButton, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
                     .addComponent(passMoveButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(26, 26, 26)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
                 .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(controlPanelLayout.createSequentialGroup()
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -119,7 +127,7 @@ public class GameScene extends javax.swing.JFrame {
                         .addComponent(jLabel1)
                         .addGap(18, 18, 18)
                         .addComponent(p1UnameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap(28, Short.MAX_VALUE))
+                .addContainerGap(25, Short.MAX_VALUE))
         );
         controlPanelLayout.setVerticalGroup(
             controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -140,9 +148,11 @@ public class GameScene extends javax.swing.JFrame {
                     .addComponent(jLabel3)
                     .addComponent(sizeSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(scoreBoardButton)
-                    .addComponent(passMoveButton))
+                .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(passMoveButton)
+                    .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel4)
+                        .addComponent(playerTurnLabel)))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -158,7 +168,7 @@ public class GameScene extends javax.swing.JFrame {
         );
         gamePanelLayout.setVerticalGroup(
             gamePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 251, Short.MAX_VALUE)
+            .addGap(0, 229, Short.MAX_VALUE)
         );
 
         jSplitPane1.setRightComponent(gamePanel);
@@ -220,9 +230,11 @@ public class GameScene extends javax.swing.JFrame {
         if (state.getCurrentPlayer() == GameState.Turn.BLACK) {
             button.setHasCircle(true, false);
             state.setCurrentPlayer(GameState.Turn.WHITE);
+            playerTurnLabel.setText("White");
         } else {
             button.setHasCircle(true, true);
             state.setCurrentPlayer(GameState.Turn.BLACK);
+            playerTurnLabel.setText("Black");
         }
     }
     
@@ -234,12 +246,13 @@ public class GameScene extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JButton newGameButton;
     private javax.swing.JLabel p1UnameLabel;
     private javax.swing.JLabel p2UnameLabel;
     private javax.swing.JButton passMoveButton;
-    private javax.swing.JButton scoreBoardButton;
+    private javax.swing.JLabel playerTurnLabel;
     private javax.swing.JSpinner sizeSpinner;
     // End of variables declaration//GEN-END:variables
 }

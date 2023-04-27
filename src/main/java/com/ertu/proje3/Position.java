@@ -26,8 +26,7 @@ public class Position {
                     return new Position(i, j);
                 }
             }
-        }
-        
+        }       
         return null;
     }
 
@@ -88,10 +87,5 @@ public class Position {
                 return path;
             }
         }
-    }
-    
-    public static boolean hasPath(Position first, Position last) {
-        return (first.getY() == last.getY()) || (first.getX() == last.getX()) ||
-                ((first.getX() - last.getX()) == (first.getY() - last.getY()));
     }
 }
