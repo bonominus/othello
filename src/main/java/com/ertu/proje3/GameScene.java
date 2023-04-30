@@ -7,6 +7,8 @@ package com.ertu.proje3;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -45,7 +47,7 @@ public class GameScene extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         p1UnameLabel = new javax.swing.JLabel();
         p2UnameLabel = new javax.swing.JLabel();
-        passMoveButton = new javax.swing.JButton();
+        passButton = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
         playerTurnLabel = new javax.swing.JLabel();
         gamePanel = new javax.swing.JPanel();
@@ -85,10 +87,10 @@ public class GameScene extends javax.swing.JFrame {
         p2UnameLabel.setText("jLabel5");
         p2UnameLabel.setEnabled(false);
 
-        passMoveButton.setText("Pass");
-        passMoveButton.addActionListener(new java.awt.event.ActionListener() {
+        passButton.setText("Pass");
+        passButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                passMoveButtonActionPerformed(evt);
+                passButtonActionPerformed(evt);
             }
         });
 
@@ -116,7 +118,7 @@ public class GameScene extends javax.swing.JFrame {
                 .addGap(18, 27, Short.MAX_VALUE)
                 .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(newGameButton, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
-                    .addComponent(passMoveButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(passButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 23, Short.MAX_VALUE)
                 .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(controlPanelLayout.createSequentialGroup()
@@ -149,7 +151,7 @@ public class GameScene extends javax.swing.JFrame {
                     .addComponent(sizeSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(passMoveButton)
+                    .addComponent(passButton)
                     .addGroup(controlPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel4)
                         .addComponent(playerTurnLabel)))
@@ -180,14 +182,14 @@ public class GameScene extends javax.swing.JFrame {
 
     private void newGameButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newGameButtonActionPerformed
         gamePanel.removeAll();
-        int size = (Integer)sizeSpinner.getValue();
-        buttons = new SquareButton[size][size];
-        gamePanel.setLayout(new GridLayout(size, size, 0, 0));
+        board_size = (Integer)sizeSpinner.getValue();
+        buttons = new SquareButton[board_size][board_size];
+        gamePanel.setLayout(new GridLayout(board_size, board_size, 0, 0));
         Insets margin = new Insets(0, 0, 0, 0);
         Dimension panel_size = gamePanel.getSize();
-        int button_size = (panel_size.width * panel_size.width) / size;
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
+        int button_size = (panel_size.width * panel_size.width) / board_size;
+        for (int i = 0; i < board_size; i++) {
+            for (int j = 0; j < board_size; j++) {
                 SquareButton button = new SquareButton(button_size);
                 button.setMargin(margin);
                 button.addActionListener(new java.awt.event.ActionListener() {
@@ -198,12 +200,13 @@ public class GameScene extends javax.swing.JFrame {
                 });
                 button.setSize(64, 64);
                 //button.setEnabled(false);
+                button.setPoint(i, j);
                 buttons[i][j] = button;
                 gamePanel.add(button);
             }
         }
         
-        int board_half = size / 2;
+        int board_half = board_size / 2;
         buttons[board_half - 1][board_half - 1].setHasCircle(true, false);
         buttons[board_half - 1][board_half - 1].setEnabled(false);
         buttons[board_half][board_half - 1].setHasCircle(true, true);
@@ -217,29 +220,528 @@ public class GameScene extends javax.swing.JFrame {
         gamePanel.repaint();
     }//GEN-LAST:event_newGameButtonActionPerformed
 
-    private void passMoveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passMoveButtonActionPerformed
+    private void passButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passButtonActionPerformed
         if (state.getCurrentPlayer() == GameState.Turn.BLACK) {
-            state.setCurrentPlayer(GameState.Turn.WHITE);
-        } else {
-            state.setCurrentPlayer(GameState.Turn.BLACK);
-        }
-    }//GEN-LAST:event_passMoveButtonActionPerformed
-
-    private void squareButtonActionPerformed(java.awt.event.ActionEvent evt) {
-        SquareButton button = (SquareButton)evt.getSource();
-        if (state.getCurrentPlayer() == GameState.Turn.BLACK) {
-            button.setHasCircle(true, false);
             state.setCurrentPlayer(GameState.Turn.WHITE);
             playerTurnLabel.setText("White");
         } else {
-            button.setHasCircle(true, true);
             state.setCurrentPlayer(GameState.Turn.BLACK);
             playerTurnLabel.setText("Black");
         }
+    }//GEN-LAST:event_passButtonActionPerformed
+
+    private void squareButtonActionPerformed(java.awt.event.ActionEvent evt) {
+        SquareButton button = (SquareButton)evt.getSource();
+        boolean moved = false;
+        if (state.getCurrentPlayer() == GameState.Turn.BLACK) {
+            Position upper_point = checkUp(button, GameState.Turn.BLACK);
+            if (upper_point != null) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), upper_point);
+                for (Position point : path) {
+                    buttons[point.getX()][point.getY()].setHasCircle(true, false);
+                    buttons[point.getX()][point.getY()].setEnabled(false);
+                }
+                moved = true;
+            }
+            
+            Position lower_point = checkDown(button, GameState.Turn.BLACK);
+            if (lower_point != null) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), lower_point);
+                for (Position point : path) {
+                    buttons[point.getX()][point.getY()].setHasCircle(true, false);
+                    buttons[point.getX()][point.getY()].setEnabled(false);
+                }
+                moved = true;
+            }
+            
+            Position left_point = checkLeft(button, GameState.Turn.BLACK);
+            if (left_point != null) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), left_point);
+                for (Position point : path) {
+                    buttons[point.getX()][point.getY()].setHasCircle(true, false);
+                    buttons[point.getX()][point.getY()].setEnabled(false);
+                }
+                moved = true;
+            }
+            
+            Position right_point = checkRight(button, GameState.Turn.BLACK);
+            if (right_point != null) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), right_point);
+                for (Position point : path) {
+                    buttons[point.getX()][point.getY()].setHasCircle(true, false);
+                    buttons[point.getX()][point.getY()].setEnabled(false);
+                }
+                moved = true;
+            }
+            
+            Position upper_left_point = checkUpperLeft(button, GameState.Turn.BLACK);
+            if (upper_left_point != null) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), upper_left_point);
+                for (Position point : path) {
+                    buttons[point.getX()][point.getY()].setHasCircle(true, false);
+                    buttons[point.getX()][point.getY()].setEnabled(false);
+                }
+                moved = true;
+            }
+            
+            Position upper_right_point = checkUpperRight(button, GameState.Turn.BLACK);
+            if (upper_right_point != null) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), upper_right_point);
+                for (Position point : path) {
+                    buttons[point.getX()][point.getY()].setHasCircle(true, false);
+                    buttons[point.getX()][point.getY()].setEnabled(false);
+                }
+                moved = true;
+            }
+            
+            Position lower_left_point = checkLowerLeft(button, GameState.Turn.BLACK);
+            if (lower_left_point != null) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), lower_left_point);
+                for (Position point : path) {
+                    buttons[point.getX()][point.getY()].setHasCircle(true, false);
+                    buttons[point.getX()][point.getY()].setEnabled(false);
+                }
+                moved = true;
+            }
+            
+            Position lower_right_point = checkLowerRight(button, GameState.Turn.BLACK);
+            if (lower_right_point != null) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), lower_right_point);
+                for (Position point : path) {
+                    buttons[point.getX()][point.getY()].setHasCircle(true, false);
+                    buttons[point.getX()][point.getY()].setEnabled(false);
+                }
+                moved = true;
+            }
+            if (moved) {
+                if (testPlayerTurn(GameState.Turn.WHITE)) {
+                    state.setCurrentPlayer(GameState.Turn.WHITE);
+                    playerTurnLabel.setText("White");
+                } else if (!testPlayerTurn(GameState.Turn.WHITE) && testPlayerTurn(GameState.Turn.BLACK)) {
+                    JOptionPane.showMessageDialog(this, "Opponent player doesn't have a valid move. Turn will not change",
+                            "Player keeps turn", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Players don't have valid moves. Ending the game with current scores...", "Game Over",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "You can't play that square!",
+                        "Invalid move", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            Position upper_point = checkUp(button, GameState.Turn.WHITE);
+            if (upper_point != null) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), upper_point);
+                for (Position point : path) {
+                    buttons[point.getX()][point.getY()].setHasCircle(true, true);
+                    buttons[point.getX()][point.getY()].setEnabled(false);
+                }
+                moved = true;
+            }
+            
+            Position lower_point = checkDown(button, GameState.Turn.WHITE);
+            if (lower_point != null) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), lower_point);
+                for (Position point : path) {
+                    buttons[point.getX()][point.getY()].setHasCircle(true, true);
+                    buttons[point.getX()][point.getY()].setEnabled(false);
+                }
+                moved = true;
+            }
+            
+            Position left_point = checkLeft(button, GameState.Turn.WHITE);
+            if (left_point != null) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), left_point);
+                for (Position point : path) {
+                    buttons[point.getX()][point.getY()].setHasCircle(true, true);
+                    buttons[point.getX()][point.getY()].setEnabled(false);
+                }
+                moved = true;
+            }
+            
+            Position right_point = checkRight(button, GameState.Turn.WHITE);
+            if (right_point != null) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), right_point);
+                for (Position point : path) {
+                    buttons[point.getX()][point.getY()].setHasCircle(true, true);
+                    buttons[point.getX()][point.getY()].setEnabled(false);
+                }
+                moved = true;
+            }
+            
+            Position upper_left_point = checkUpperLeft(button, GameState.Turn.WHITE);
+            if (upper_left_point != null) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), upper_left_point);
+                for (Position point : path) {
+                    buttons[point.getX()][point.getY()].setHasCircle(true, true);
+                    buttons[point.getX()][point.getY()].setEnabled(false);
+                }
+                moved = true;
+            }
+            
+            Position upper_right_point = checkUpperRight(button, GameState.Turn.WHITE);
+            if (upper_right_point != null) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), upper_right_point);
+                for (Position point : path) {
+                    buttons[point.getX()][point.getY()].setHasCircle(true, true);
+                    buttons[point.getX()][point.getY()].setEnabled(false);
+                }
+                moved = true;
+            }
+            
+            Position lower_left_point = checkLowerLeft(button, GameState.Turn.WHITE);
+            if (lower_left_point != null) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), lower_left_point);
+                for (Position point : path) {
+                    buttons[point.getX()][point.getY()].setHasCircle(true, true);
+                    buttons[point.getX()][point.getY()].setEnabled(false);
+                }
+                moved = true;
+            }
+            
+            Position lower_right_point = checkLowerRight(button, GameState.Turn.WHITE);
+            if (lower_right_point != null) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), lower_right_point);
+                for (Position point : path) {
+                    buttons[point.getX()][point.getY()].setHasCircle(true, true);
+                    buttons[point.getX()][point.getY()].setEnabled(false);
+                }
+                moved = true;
+            }
+            if (moved) {    
+                if (testPlayerTurn(GameState.Turn.BLACK)) {
+                    state.setCurrentPlayer(GameState.Turn.BLACK);
+                    playerTurnLabel.setText("Black");
+                } else if (!testPlayerTurn(GameState.Turn.BLACK) && testPlayerTurn(GameState.Turn.WHITE)) {
+                    JOptionPane.showMessageDialog(this, "Opponent player doesn't have a valid move. Turn will not change",
+                            "Player keeps turn", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Players don't have valid moves. Ending the game with current scores...", "Game Over",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "You can't play that square!",
+                        "Invalid move", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        
+        
+    }
+    
+    private Position checkUp(SquareButton button, GameState.Turn player) {
+        int x = button.getPoint().getX();
+        int y = button.getPoint().getY();
+        
+        SquareButton last_button = null;    
+        if (y != 0) {
+            if (player == GameState.Turn.BLACK) {
+                for (int i = y - 1; i >= 0; i--) {
+                    last_button = buttons[x][i];
+                    int color = last_button.isFilled();
+                    if (color == 0) {
+                        return null;
+                    } else if (color == 1) {
+                        int distance = Math.abs(y - last_button.getPoint().getY());
+                        if (distance > 1) {
+                            return last_button.getPoint();
+                        }
+                    }
+                }
+            } else {
+                for (int i = x - 1; i >= 0; i--) {
+                    last_button = buttons[x][i];
+                    int color = last_button.isFilled();
+                    if (color == 0) {
+                        return null;
+                    } else if (color == 2) {
+                        int distance = Math.abs(y - last_button.getPoint().getY());
+                        if (distance > 1) {
+                            return last_button.getPoint();
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    private Position checkDown(SquareButton button, GameState.Turn player) {
+        int x = button.getPoint().getX();
+        int y = button.getPoint().getY();
+        
+        SquareButton last_button = null;
+        if (y != board_size - 1) {
+            if (player == GameState.Turn.BLACK) {
+                for (int i = y + 1; i < board_size; i++) {
+                    last_button = buttons[x][i];
+                    int color = last_button.isFilled();
+                    if (color == 0) {
+                        return null;
+                    } else if (color == 1) {
+                        int distance = Math.abs(y - last_button.getPoint().getY());
+                        if (distance > 1) {
+                            return last_button.getPoint();
+                        }
+                    }
+                }
+            } else {
+                for (int i = y + 1; i < board_size; i++) {
+                    last_button = buttons[x][i];
+                    int color = last_button.isFilled();
+                    if (color == 0) {
+                        return null;
+                    } else if (color == 2) {
+                        int distance = Math.abs(y - last_button.getPoint().getY());
+                        if (distance > 1) {
+                            return last_button.getPoint();
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    private Position checkLeft(SquareButton button, GameState.Turn player) {
+        int x = button.getPoint().getX();
+        int y = button.getPoint().getY();
+        
+        SquareButton last_button = null;
+        if (x != 0) {
+            if (player == GameState.Turn.BLACK) {
+                for (int i = x - 1; i >= 0; i--) {
+                    last_button = buttons[i][y];
+                    int color = last_button.isFilled();
+                    if (color == 0) {
+                        return null;
+                    } else if (color == 1) {
+                        int distance = Math.abs(x - last_button.getPoint().getX());
+                        if (distance > 1) {
+                            return last_button.getPoint();
+                        }
+                    }
+                }
+            } else {
+                for (int i = x - 1; i >= 0; i--) {
+                    last_button = buttons[i][y];
+                    int color = last_button.isFilled();
+                    if (color == 0) {
+                        return null;
+                    } else if (color == 2) {
+                        int distance = Math.abs(x - last_button.getPoint().getX());
+                        if (distance > 1) {
+                            return last_button.getPoint();
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    private Position checkRight(SquareButton button, GameState.Turn player) {
+        int x = button.getPoint().getX();
+        int y = button.getPoint().getY();
+        
+        SquareButton last_button = null;
+        if (x != board_size - 1) {
+            if (player == GameState.Turn.BLACK) {
+                for (int i = x + 1; i < board_size; i++) {
+                    last_button = buttons[i][y];
+                    int color = last_button.isFilled();
+                    if (color == 0) {
+                        return null;
+                    } else if (color == 1) {
+                        int distance = Math.abs(x - last_button.getPoint().getX());
+                        if (distance > 1) {
+                            return last_button.getPoint();
+                        }
+                    }
+                }
+            } else {
+                for (int i = y + 1; i < board_size; i++) {
+                    last_button = buttons[i][y];
+                    int color = last_button.isFilled();
+                    if (color == 0) {
+                        return null;
+                    } else if (color == 2) {
+                        int distance = Math.abs(x - last_button.getPoint().getX());
+                        if (distance > 1) {
+                            return last_button.getPoint();
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    private Position checkUpperLeft(SquareButton button, GameState.Turn player) {
+        int x = button.getPoint().getX();
+        int y = button.getPoint().getY();
+        
+        SquareButton last_button = null;
+        if (x != 0 && y !=0) {
+            if (player == GameState.Turn.BLACK) {
+                for (int i = x - 1, j = y - 1; i >= 0 && j >= 0; i--, j--) {
+                    last_button = buttons[i][j];
+                    int color = last_button.isFilled();
+                    if (color == 0) {
+                        return null;
+                    } else if (color == 2) {
+                        int distance = Math.abs(x - last_button.getPoint().getX()) + Math.abs(y - last_button.getPoint().getY());
+                        if (distance > 2) {
+                            return last_button.getPoint();
+                        }
+                    }
+                }
+            } else {
+                for (int i = x - 1, j = y - 1; i >= 0 && j >= 0; i--, j--) {
+                    last_button = buttons[i][j];
+                    int color = last_button.isFilled();
+                    if (color == 0) {
+                        return null;
+                    } else if (color == 2) {
+                        int distance = Math.abs(x - last_button.getPoint().getX()) + Math.abs(y - last_button.getPoint().getY());
+                        if (distance > 2) {
+                            return last_button.getPoint();
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    private Position checkUpperRight(SquareButton button, GameState.Turn player) {
+        int x = button.getPoint().getX();
+        int y = button.getPoint().getY();
+        
+        SquareButton last_button = null;
+        if (x != board_size - 1 && y != 0) {
+            if (player == GameState.Turn.BLACK) {
+                for (int i = x + 1, j = y - 1; i >= 0 && j < board_size; i++, j--) {
+                    last_button = buttons[i][j];
+                    int color = last_button.isFilled();
+                    if (color == 0) {
+                        return null;
+                    } else if (color == 1) {
+                        int distance = Math.abs(x - last_button.getPoint().getX()) + Math.abs(y - last_button.getPoint().getY());
+                        if (distance > 2) {
+                            return last_button.getPoint();
+                        }
+                    }
+                }
+            } else {
+                for (int i = x - 1, j = y + 1; i >= 0 && j < board_size; i--, j++) {
+                    last_button = buttons[i][j];
+                    int color = last_button.isFilled();
+                    if (color == 0) {
+                        return null;
+                    } else if (color == 2) {
+                        int distance = Math.abs(x - last_button.getPoint().getX()) + Math.abs(y - last_button.getPoint().getY());
+                        if (distance > 2) {
+                            return last_button.getPoint();
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    private Position checkLowerRight(SquareButton button, GameState.Turn player) {
+        int x = button.getPoint().getX();
+        int y = button.getPoint().getY();
+        
+        SquareButton last_button = null;
+        if (y != board_size - 1) {
+            if (player == GameState.Turn.BLACK) {
+                for (int i = x + 1, j = y + 1; i < board_size && j < board_size; i++, j++) {
+                    last_button = buttons[i][j];
+                    int color = last_button.isFilled();
+                    if (color == 0) {
+                        return null;
+                    } else if (color == 1) {
+                        int distance = Math.abs(x - last_button.getPoint().getX()) + Math.abs(y - last_button.getPoint().getY());
+                        if (distance > 2) {
+                            return last_button.getPoint();
+                        }
+                    }
+                }
+            } else {
+                for (int i = x + 1, j = y + 1; i < board_size && j < board_size; i++, j++) {
+                    last_button = buttons[i][j];
+                    int color = last_button.isFilled();
+                    if (color == 0) {
+                        return null;
+                    } else if (color == 2) {
+                        int distance = Math.abs(x - last_button.getPoint().getX()) + Math.abs(y - last_button.getPoint().getY());
+                        if (distance > 2) {
+                            return last_button.getPoint();
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    private Position checkLowerLeft(SquareButton button, GameState.Turn player) {
+        int x = button.getPoint().getX();
+        int y = button.getPoint().getY();
+        
+        SquareButton last_button = null;
+        if (y != board_size - 1) {
+            if (player == GameState.Turn.BLACK) {
+                for (int i = x - 1, j = y + 1; i >= 0 && j < board_size; i--, j++) {
+                    last_button = buttons[i][j];
+                    int color = last_button.isFilled();
+                    if (color == 0) {
+                        return null;
+                    } else if (color == 1) {
+                        int distance = Math.abs(x - last_button.getPoint().getX()) + Math.abs(y - last_button.getPoint().getY());
+                        if (distance > 2) {
+                            return last_button.getPoint();
+                        }
+                    }
+                }
+            } else {
+                for (int i = x - 1, j = y + 1; i >= 0 && j < board_size; i--, j++) {
+                    last_button = buttons[i][j];
+                    int color = last_button.isFilled();
+                    if (color == 0) {
+                        return null;
+                    } else if (color == 2) {
+                        int distance = Math.abs(x - last_button.getPoint().getX()) + Math.abs(y - last_button.getPoint().getY());
+                        if (distance > 2) {
+                            return last_button.getPoint();
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    private boolean testPlayerTurn(GameState.Turn player) {
+        for (int i = 0; i < board_size; i++) {
+            for (int j = 0; j < board_size; j++) {
+                SquareButton button = buttons[i][j];
+                if (checkUp(button, player) != null || checkDown(button, player) != null
+                        || checkLeft(button, player) != null || checkRight(button, player) != null
+                        || checkUpperLeft(button, player) != null || checkUpperRight(button, player) != null
+                        || checkLowerLeft(button, player) != null || checkLowerRight(button, player) != null) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     private GameState state;
     private SquareButton[][] buttons;
+    private int board_size;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel controlPanel;
     private javax.swing.JPanel gamePanel;
@@ -251,7 +753,7 @@ public class GameScene extends javax.swing.JFrame {
     private javax.swing.JButton newGameButton;
     private javax.swing.JLabel p1UnameLabel;
     private javax.swing.JLabel p2UnameLabel;
-    private javax.swing.JButton passMoveButton;
+    private javax.swing.JButton passButton;
     private javax.swing.JLabel playerTurnLabel;
     private javax.swing.JSpinner sizeSpinner;
     // End of variables declaration//GEN-END:variables

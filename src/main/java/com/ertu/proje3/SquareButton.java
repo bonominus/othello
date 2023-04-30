@@ -86,5 +86,13 @@ public class SquareButton extends JButton {
         }
     }
     
-    
+    public int isFilled() {
+        if (hasCircle && !circleIsWhite) {
+            return 1;
+        } else if (hasCircle && circleIsWhite) {
+            return 2;
+        } else {
+            return 0;
+        }
+    }
 }

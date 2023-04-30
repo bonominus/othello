@@ -66,7 +66,7 @@
                       <EmptySpace type="separate" pref="27" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="newGameButton" pref="92" max="32767" attributes="0"/>
-                          <Component id="passMoveButton" max="32767" attributes="0"/>
+                          <Component id="passButton" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace pref="23" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
@@ -109,7 +109,7 @@
                       </Group>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="passMoveButton" min="-2" max="-2" attributes="0"/>
+                          <Component id="passButton" min="-2" max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
                               <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
                               <Component id="playerTurnLabel" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -178,12 +178,12 @@
                 <Property name="enabled" type="boolean" value="false"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JButton" name="passMoveButton">
+            <Component class="javax.swing.JButton" name="passButton">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Pass"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="passMoveButtonActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="passButtonActionPerformed"/>
               </Events>
             </Component>
             <Component class="javax.swing.JLabel" name="jLabel4">
