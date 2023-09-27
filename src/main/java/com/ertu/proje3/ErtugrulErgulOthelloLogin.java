@@ -11,12 +11,12 @@ import javax.swing.JOptionPane;
  *
  * @author ergul
  */
-public class OthelloLogin extends javax.swing.JFrame {
+public class ErtugrulErgulOthelloLogin extends javax.swing.JFrame {
 
     /**
      * Creates new form OthelloLogin
      */
-    public OthelloLogin() {
+    public ErtugrulErgulOthelloLogin() {
         initComponents();
     }
 
@@ -183,11 +183,12 @@ public class OthelloLogin extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void loginRedirectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginRedirectButtonActionPerformed
-        OthelloRegister register_dialog = new OthelloRegister(this, true);
+        ErtugrulErgulOthelloRegister register_dialog = new ErtugrulErgulOthelloRegister(this, true);
         register_dialog.setVisible(true);
     }//GEN-LAST:event_loginRedirectButtonActionPerformed
 
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
+        // Email addresses are checked for validity
         if (!user1EmailTF.getText().matches("[A-Za-z0-9]+@[a-z]+\\.com")) {
             JOptionPane.showMessageDialog(this, "User 1's email is not valid.",
                     "Format Error", JOptionPane.WARNING_MESSAGE);
@@ -200,20 +201,22 @@ public class OthelloLogin extends javax.swing.JFrame {
             return;
         }
         
-        Player first_player = Database.login(user1EmailTF.getText(), user1PasswordPF.getPassword());
+        // If credentials are invalid, a warning is shown. Otherwise, player classes are created
+        ErtugrulErgulPlayer first_player = ErtugrulErgulDatabase.login(user1EmailTF.getText(), user1PasswordPF.getPassword());
         if (first_player == null) {
             JOptionPane.showMessageDialog(this, "User 1's credentials do not exist.",
                     "Invalid User", JOptionPane.WARNING_MESSAGE);
             return;
         }
         
-        Player second_player = Database.login(user2EmailTF.getText(), user2PasswordPF.getPassword());
+        ErtugrulErgulPlayer second_player = ErtugrulErgulDatabase.login(user2EmailTF.getText(), user2PasswordPF.getPassword());
         if (second_player == null) {
             JOptionPane.showMessageDialog(this, "User 2's credentials do not exist.",
                     "Invalid User", JOptionPane.WARNING_MESSAGE);
         }
         
-        GameScene game = new GameScene(first_player, second_player);
+        // ...and game begins
+        ErtugrulErgulGameScene game = new ErtugrulErgulGameScene(first_player, second_player);
         game.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_loginButtonActionPerformed
@@ -225,21 +228,20 @@ public class OthelloLogin extends javax.swing.JFrame {
         try {
             javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(OthelloLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ErtugrulErgulOthelloLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(OthelloLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ErtugrulErgulOthelloLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(OthelloLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ErtugrulErgulOthelloLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(OthelloLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ErtugrulErgulOthelloLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new OthelloLogin().setVisible(true);
+                new ErtugrulErgulOthelloLogin().setVisible(true);
             }
         });
     }

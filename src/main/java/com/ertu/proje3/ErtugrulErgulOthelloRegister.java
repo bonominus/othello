@@ -11,16 +11,17 @@ import java.util.Arrays;
  *
  * @author ergul
  */
-public class OthelloRegister extends javax.swing.JDialog {
+public class ErtugrulErgulOthelloRegister extends javax.swing.JDialog {
 
     /**
      * Creates new form OthelloRegister
      * @param parent
      * @param modal
      */
-    public OthelloRegister(java.awt.Frame parent, boolean modal) {
+    public ErtugrulErgulOthelloRegister(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        setLocationRelativeTo(parent);
     }
 
     /**
@@ -131,34 +132,49 @@ public class OthelloRegister extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void registerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerButtonActionPerformed
+        // Form is checked for empty fields
         if (usernameRegisterTF.getText().isBlank() || emailRegisterTF.getText().isBlank() ||
                 isCharArrayEmpty(passwordRegisterPF.getPassword()) || isCharArrayEmpty(rePasswordRegisterPF.getPassword())) {
             JOptionPane.showMessageDialog(this, "Fill all area!",
                     "Blank areas", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
+       
+        // Password is checked against the repeat for matching
        if (!Arrays.equals(passwordRegisterPF.getPassword(), rePasswordRegisterPF.getPassword())) {
            JOptionPane.showMessageDialog(this, "Passwords do not match!",
                    "Password mismatch", JOptionPane.WARNING_MESSAGE);
            return;
        }
        
-       Player registered_user = Database.register(usernameRegisterTF.getText(), emailRegisterTF.getText(), passwordRegisterPF.getPassword());
+       // If the form is filled and passwords match, new user is registered. Null value means that email is taken
+       ErtugrulErgulPlayer registered_user = ErtugrulErgulDatabase.register(usernameRegisterTF.getText(), emailRegisterTF.getText(), passwordRegisterPF.getPassword());
        if (registered_user == null) {
            JOptionPane.showMessageDialog(this, "This email is already in use",
                    "Email Taken", JOptionPane.WARNING_MESSAGE);
            return;
        } else {
+           // In case of success, user is redirected to login
            this.dispose();
        }
     }//GEN-LAST:event_registerButtonActionPerformed
 
     public static boolean isCharArrayEmpty(char[] value) {
-        return indexOfNonWhitespace(value) == value.length;
+        // This function is for checking emptiness of char[] type since JPasswordField returns the query as char[]
+        int length = value.length >> 1;
+        int left = 0;
+        while (left < length) {
+            int codepoint = Character.codePointAt(value, left, length);
+            if (codepoint != ' ' && codepoint != '\t' && !Character.isWhitespace(codepoint)) {
+                break;
+            }
+            left += Character.charCount(codepoint);
+        }
+        return left == value.length;
     }
 
     public static int indexOfNonWhitespace(char[] value) {
+        // This function checks if the password is empty or only consists of blank characters
         int length = value.length >> 1;
         int left = 0;
         while (left < length) {

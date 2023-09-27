@@ -10,26 +10,26 @@ import java.util.UUID;
  *
  * @author ergul
  */
-public class Player {
+public class ErtugrulErgulPlayer {
     private String username;
     private String email;
     private char[] password;
     private String unique_id;
     
-    public Player(String name, String email, char[] password) {
+    public ErtugrulErgulPlayer(String name, String email, char[] password) {
         username = name;
         this.email = email;
         this.password = password;
         this.unique_id = UUID.randomUUID().toString();
     }
-    
-    public Player(String name, String email, char[] password, String id) {
+
+    public ErtugrulErgulPlayer(String name, String email, char[] password, String id) {
         username = name;
         this.email = email;
         this.password = password;
         this.unique_id = id;
     }
-
+    
     public String getUsername() {
         return username;
     }
