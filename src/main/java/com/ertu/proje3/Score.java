@@ -9,12 +9,12 @@ package com.ertu.proje3;
  * @author ergul
  */
 
-public class ErtugrulErgulScore implements Comparable<ErtugrulErgulScore>{
+public class Score implements Comparable<Score>{
     private String username;
     private int score;
     private String unique_id;
 
-    public ErtugrulErgulScore(String username, int score, String unique_id) {
+    public Score(String username, int score, String unique_id) {
         this.username = username;
         this.score = score;
         this.unique_id = unique_id;
@@ -22,7 +22,7 @@ public class ErtugrulErgulScore implements Comparable<ErtugrulErgulScore>{
     
     // Comparable<> is implemented to sort the scores by descending order
     @Override
-    public int compareTo(ErtugrulErgulScore o) {
+    public int compareTo(Score o) {
         if (this.score < o.getScore()) {
             return -1;
         } else if (this.score == o.getScore()) {

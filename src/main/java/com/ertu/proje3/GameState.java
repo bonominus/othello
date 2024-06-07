@@ -8,16 +8,16 @@ package com.ertu.proje3;
  *
  * @author ergul
  */
-public class ErtugrulErgulGameState {
+public class GameState {
     enum Turn {
         BLACK, WHITE
     };
     
-    private ErtugrulErgulPlayer white_player;
-    private ErtugrulErgulPlayer black_player;
+    private Player white_player;
+    private Player black_player;
     private Turn current_player;
     
-    public ErtugrulErgulGameState(ErtugrulErgulPlayer player1, ErtugrulErgulPlayer player2) {
+    public GameState(Player player1, Player player2) {
         this.black_player = player1;
         this.white_player = player2;
     }
@@ -30,11 +30,11 @@ public class ErtugrulErgulGameState {
         this.current_player = current_player;
     }
 
-    public ErtugrulErgulPlayer getWhitePlayer() {
+    public Player getWhitePlayer() {
         return white_player;
     }
 
-    public ErtugrulErgulPlayer getBlackPlayer() {
+    public Player getBlackPlayer() {
         return black_player;
     }
     

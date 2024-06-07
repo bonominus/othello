@@ -11,14 +11,14 @@ import java.util.Arrays;
  *
  * @author ergul
  */
-public class ErtugrulErgulOthelloRegister extends javax.swing.JDialog {
+public class OthelloRegister extends javax.swing.JDialog {
 
     /**
      * Creates new form OthelloRegister
      * @param parent
      * @param modal
      */
-    public ErtugrulErgulOthelloRegister(java.awt.Frame parent, boolean modal) {
+    public OthelloRegister(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(parent);
@@ -148,7 +148,7 @@ public class ErtugrulErgulOthelloRegister extends javax.swing.JDialog {
        }
        
        // If the form is filled and passwords match, new user is registered. Null value means that email is taken
-       ErtugrulErgulPlayer registered_user = ErtugrulErgulDatabase.register(usernameRegisterTF.getText(), emailRegisterTF.getText(), passwordRegisterPF.getPassword());
+       Player registered_user = Database.register(usernameRegisterTF.getText(), emailRegisterTF.getText(), passwordRegisterPF.getPassword());
        if (registered_user == null) {
            JOptionPane.showMessageDialog(this, "This email is already in use",
                    "Email Taken", JOptionPane.WARNING_MESSAGE);

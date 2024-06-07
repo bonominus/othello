@@ -14,12 +14,12 @@ import javax.swing.JOptionPane;
  *
  * @author ergul
  */
-public class ErtugrulErgulGameScene extends javax.swing.JFrame {
+public class GameScene extends javax.swing.JFrame {
 
     /**
      * Creates new form GameScene
      */
-    public ErtugrulErgulGameScene(ErtugrulErgulPlayer player1, ErtugrulErgulPlayer player2 ) {
+    public GameScene(Player player1, Player player2 ) {
         initComponents();
         // Usernames are shown in the interface
         p1UnameLabel.setText(player1.getUsername());
@@ -27,9 +27,9 @@ public class ErtugrulErgulGameScene extends javax.swing.JFrame {
         p2UnameLabel.setText(player2.getUsername());
         p2UnameLabel.setEnabled(true);
         
-        state = new ErtugrulErgulGameState(player1, player2);
+        state = new GameState(player1, player2);
         // According to Othello rules, black player starts the game
-        state.setCurrentPlayer(ErtugrulErgulGameState.Turn.BLACK);
+        state.setCurrentPlayer(GameState.Turn.BLACK);
     }
 
     /**
@@ -213,7 +213,7 @@ public class ErtugrulErgulGameScene extends javax.swing.JFrame {
     private void newGameButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newGameButtonActionPerformed
         gamePanel.removeAll();
         board_size = (Integer)sizeSpinner.getValue();
-        buttons = new ErtugrulErgulSquareButton[board_size][board_size];
+        buttons = new SquareButton[board_size][board_size];
         // Grid layout is used to imitate a game board. Space is specified as zero.
         gamePanel.setLayout(new GridLayout(board_size, board_size, 0, 0));
         Insets margin = new Insets(0, 0, 0, 0);
@@ -222,7 +222,7 @@ public class ErtugrulErgulGameScene extends javax.swing.JFrame {
         int button_size = (panel_size.width * panel_size.width) / board_size;
         for (int i = 0; i < board_size; i++) {
             for (int j = 0; j < board_size; j++) {
-                ErtugrulErgulSquareButton button = new ErtugrulErgulSquareButton(button_size);
+                SquareButton button = new SquareButton(button_size);
                 button.setMargin(margin);
                 button.addActionListener(new java.awt.event.ActionListener() {
                     @Override
@@ -251,7 +251,7 @@ public class ErtugrulErgulGameScene extends javax.swing.JFrame {
         buttons[board_half][board_half].setEnabled(false);
         
         // Game starts with black player
-        state.setCurrentPlayer(ErtugrulErgulGameState.Turn.BLACK);
+        state.setCurrentPlayer(GameState.Turn.BLACK);
         
         gamePanel.revalidate();
         gamePanel.repaint();
@@ -259,45 +259,45 @@ public class ErtugrulErgulGameScene extends javax.swing.JFrame {
 
     private void passButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passButtonActionPerformed
         // Players manually pass their turn
-        if (state.getCurrentPlayer() == ErtugrulErgulGameState.Turn.BLACK) {
-            state.setCurrentPlayer(ErtugrulErgulGameState.Turn.WHITE);
+        if (state.getCurrentPlayer() == GameState.Turn.BLACK) {
+            state.setCurrentPlayer(GameState.Turn.WHITE);
             playerTurnLabel.setText("White");
         } else {
-            state.setCurrentPlayer(ErtugrulErgulGameState.Turn.BLACK);
+            state.setCurrentPlayer(GameState.Turn.BLACK);
             playerTurnLabel.setText("Black");
         }
     }//GEN-LAST:event_passButtonActionPerformed
 
     private void scoreBoardMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_scoreBoardMenuItemActionPerformed
         // This button shows the scoreboard.
-        ErtugrulErgulScoreBoard board = new ErtugrulErgulScoreBoard(this, true, ErtugrulErgulDatabase.getScores());
+        ScoreBoard board = new ScoreBoard(this, true, Database.getScores());
         board.setVisible(true);
     }//GEN-LAST:event_scoreBoardMenuItemActionPerformed
 
     private void endGameButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_endGameButtonActionPerformed
         // Players manually end the game. Their scores are recorded and the app is redirected to scoreboard
-        int black_score = getColoredPoints(ErtugrulErgulGameState.Turn.BLACK);
-        int white_score = getColoredPoints(ErtugrulErgulGameState.Turn.WHITE);
-        ErtugrulErgulDatabase.registerScore(state.getBlackPlayer(), black_score);
-        ErtugrulErgulDatabase.registerScore(state.getWhitePlayer(), white_score);
+        int black_score = getColoredPoints(GameState.Turn.BLACK);
+        int white_score = getColoredPoints(GameState.Turn.WHITE);
+        Database.registerScore(state.getBlackPlayer(), black_score);
+        Database.registerScore(state.getWhitePlayer(), white_score);
         
-        ErtugrulErgulScoreBoard board = new ErtugrulErgulScoreBoard(null, false, ErtugrulErgulDatabase.getScores());
+        ScoreBoard board = new ScoreBoard(null, false, Database.getScores());
         board.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_endGameButtonActionPerformed
 
     private void squareButtonActionPerformed(java.awt.event.ActionEvent evt) {
         // Button that passed the event is retrieved.
-        ErtugrulErgulSquareButton button = (ErtugrulErgulSquareButton)evt.getSource();
+        SquareButton button = (SquareButton)evt.getSource();
         // Board is checked to see if the player made a move.
         boolean moved = false;
-        if (state.getCurrentPlayer() == ErtugrulErgulGameState.Turn.BLACK) {
+        if (state.getCurrentPlayer() == GameState.Turn.BLACK) {
             // Upper direction is checked. If the move is valid, all the stones between - including
             // the positions - are rendered with the player's color
-            ErtugrulErgulPosition upper_point = checkUp(button, ErtugrulErgulGameState.Turn.BLACK);
+            Position upper_point = checkUp(button, GameState.Turn.BLACK);
             if (upper_point != null) {
-                ArrayList<ErtugrulErgulPosition> path = ErtugrulErgulPosition.getPath(button.getPoint(), upper_point);
-                for (ErtugrulErgulPosition point : path) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), upper_point);
+                for (Position point : path) {
                     buttons[point.getX()][point.getY()].setHasCircle(true, false);
                     buttons[point.getX()][point.getY()].setEnabled(false);
                 }
@@ -306,70 +306,70 @@ public class ErtugrulErgulGameScene extends javax.swing.JFrame {
             
             // Lower direction, same as the above. From now on only the directions change:
             // upper, lower, left, right, upper left, upper right, lower left, lower right.
-            ErtugrulErgulPosition lower_point = checkDown(button, ErtugrulErgulGameState.Turn.BLACK);
+            Position lower_point = checkDown(button, GameState.Turn.BLACK);
             if (lower_point != null) {
-                ArrayList<ErtugrulErgulPosition> path = ErtugrulErgulPosition.getPath(button.getPoint(), lower_point);
-                for (ErtugrulErgulPosition point : path) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), lower_point);
+                for (Position point : path) {
                     buttons[point.getX()][point.getY()].setHasCircle(true, false);
                     buttons[point.getX()][point.getY()].setEnabled(false);
                 }
                 moved = true;
             }
             
-            ErtugrulErgulPosition left_point = checkLeft(button, ErtugrulErgulGameState.Turn.BLACK);
+            Position left_point = checkLeft(button, GameState.Turn.BLACK);
             if (left_point != null) {
-                ArrayList<ErtugrulErgulPosition> path = ErtugrulErgulPosition.getPath(button.getPoint(), left_point);
-                for (ErtugrulErgulPosition point : path) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), left_point);
+                for (Position point : path) {
                     buttons[point.getX()][point.getY()].setHasCircle(true, false);
                     buttons[point.getX()][point.getY()].setEnabled(false);
                 }
                 moved = true;
             }
             
-            ErtugrulErgulPosition right_point = checkRight(button, ErtugrulErgulGameState.Turn.BLACK);
+            Position right_point = checkRight(button, GameState.Turn.BLACK);
             if (right_point != null) {
-                ArrayList<ErtugrulErgulPosition> path = ErtugrulErgulPosition.getPath(button.getPoint(), right_point);
-                for (ErtugrulErgulPosition point : path) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), right_point);
+                for (Position point : path) {
                     buttons[point.getX()][point.getY()].setHasCircle(true, false);
                     buttons[point.getX()][point.getY()].setEnabled(false);
                 }
                 moved = true;
             }
             
-            ErtugrulErgulPosition upper_left_point = checkUpperLeft(button, ErtugrulErgulGameState.Turn.BLACK);
+            Position upper_left_point = checkUpperLeft(button, GameState.Turn.BLACK);
             if (upper_left_point != null) {
-                ArrayList<ErtugrulErgulPosition> path = ErtugrulErgulPosition.getPath(button.getPoint(), upper_left_point);
-                for (ErtugrulErgulPosition point : path) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), upper_left_point);
+                for (Position point : path) {
                     buttons[point.getX()][point.getY()].setHasCircle(true, false);
                     buttons[point.getX()][point.getY()].setEnabled(false);
                 }
                 moved = true;
             }
             
-            ErtugrulErgulPosition upper_right_point = checkUpperRight(button, ErtugrulErgulGameState.Turn.BLACK);
+            Position upper_right_point = checkUpperRight(button, GameState.Turn.BLACK);
             if (upper_right_point != null) {
-                ArrayList<ErtugrulErgulPosition> path = ErtugrulErgulPosition.getPath(button.getPoint(), upper_right_point);
-                for (ErtugrulErgulPosition point : path) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), upper_right_point);
+                for (Position point : path) {
                     buttons[point.getX()][point.getY()].setHasCircle(true, false);
                     buttons[point.getX()][point.getY()].setEnabled(false);
                 }
                 moved = true;
             }
             
-            ErtugrulErgulPosition lower_left_point = checkLowerLeft(button, ErtugrulErgulGameState.Turn.BLACK);
+            Position lower_left_point = checkLowerLeft(button, GameState.Turn.BLACK);
             if (lower_left_point != null) {
-                ArrayList<ErtugrulErgulPosition> path = ErtugrulErgulPosition.getPath(button.getPoint(), lower_left_point);
-                for (ErtugrulErgulPosition point : path) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), lower_left_point);
+                for (Position point : path) {
                     buttons[point.getX()][point.getY()].setHasCircle(true, false);
                     buttons[point.getX()][point.getY()].setEnabled(false);
                 }
                 moved = true;
             }
             
-            ErtugrulErgulPosition lower_right_point = checkLowerRight(button, ErtugrulErgulGameState.Turn.BLACK);
+            Position lower_right_point = checkLowerRight(button, GameState.Turn.BLACK);
             if (lower_right_point != null) {
-                ArrayList<ErtugrulErgulPosition> path = ErtugrulErgulPosition.getPath(button.getPoint(), lower_right_point);
-                for (ErtugrulErgulPosition point : path) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), lower_right_point);
+                for (Position point : path) {
                     buttons[point.getX()][point.getY()].setHasCircle(true, false);
                     buttons[point.getX()][point.getY()].setEnabled(false);
                 }
@@ -379,11 +379,11 @@ public class ErtugrulErgulGameScene extends javax.swing.JFrame {
             // If the player moved...
             if (moved) {
                 // Opposite player is checked for valid moves
-                if (testPlayerTurn(ErtugrulErgulGameState.Turn.WHITE)) {
+                if (testPlayerTurn(GameState.Turn.WHITE)) {
                     // If they can make a move, they get the next turn
-                    state.setCurrentPlayer(ErtugrulErgulGameState.Turn.WHITE);
+                    state.setCurrentPlayer(GameState.Turn.WHITE);
                     playerTurnLabel.setText("White");
-                } else if (!testPlayerTurn(ErtugrulErgulGameState.Turn.WHITE) && testPlayerTurn(ErtugrulErgulGameState.Turn.BLACK)) {
+                } else if (!testPlayerTurn(GameState.Turn.WHITE) && testPlayerTurn(GameState.Turn.BLACK)) {
                     // But if the opposite player can't make a move while the current player can, they preserve the turn.
                     JOptionPane.showMessageDialog(this, "Opponent player doesn't have a valid move. Turn will not change",
                             "Player keeps turn", JOptionPane.INFORMATION_MESSAGE);
@@ -391,10 +391,10 @@ public class ErtugrulErgulGameScene extends javax.swing.JFrame {
                     // If both sides are unable to make a move, then game ends. Scores are recorded.
                     JOptionPane.showMessageDialog(this, "Players don't have valid moves. Ending the game with current scores...", "Game Over",
                             JOptionPane.INFORMATION_MESSAGE);
-                    int black_score = getColoredPoints(ErtugrulErgulGameState.Turn.BLACK);
-                    int white_score = getColoredPoints(ErtugrulErgulGameState.Turn.WHITE);
-                    ErtugrulErgulDatabase.registerScore(state.getBlackPlayer(), black_score);
-                    ErtugrulErgulDatabase.registerScore(state.getWhitePlayer(), white_score);
+                    int black_score = getColoredPoints(GameState.Turn.BLACK);
+                    int white_score = getColoredPoints(GameState.Turn.WHITE);
+                    Database.registerScore(state.getBlackPlayer(), black_score);
+                    Database.registerScore(state.getWhitePlayer(), white_score);
                 }
             } else {
                 // Fakat bu pozisyonda yapılabilen bir hamle yoksa hamlenin geçersiz olduğu
@@ -404,99 +404,99 @@ public class ErtugrulErgulGameScene extends javax.swing.JFrame {
             }
         } else {
             // Vice versa for white player
-            ErtugrulErgulPosition upper_point = checkUp(button, ErtugrulErgulGameState.Turn.WHITE);
+            Position upper_point = checkUp(button, GameState.Turn.WHITE);
             if (upper_point != null) {
-                ArrayList<ErtugrulErgulPosition> path = ErtugrulErgulPosition.getPath(button.getPoint(), upper_point);
-                for (ErtugrulErgulPosition point : path) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), upper_point);
+                for (Position point : path) {
                     buttons[point.getX()][point.getY()].setHasCircle(true, true);
                     buttons[point.getX()][point.getY()].setEnabled(false);
                 }
                 moved = true;
             }
             
-            ErtugrulErgulPosition lower_point = checkDown(button, ErtugrulErgulGameState.Turn.WHITE);
+            Position lower_point = checkDown(button, GameState.Turn.WHITE);
             if (lower_point != null) {
-                ArrayList<ErtugrulErgulPosition> path = ErtugrulErgulPosition.getPath(button.getPoint(), lower_point);
-                for (ErtugrulErgulPosition point : path) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), lower_point);
+                for (Position point : path) {
                     buttons[point.getX()][point.getY()].setHasCircle(true, true);
                     buttons[point.getX()][point.getY()].setEnabled(false);
                 }
                 moved = true;
             }
             
-            ErtugrulErgulPosition left_point = checkLeft(button, ErtugrulErgulGameState.Turn.WHITE);
+            Position left_point = checkLeft(button, GameState.Turn.WHITE);
             if (left_point != null) {
-                ArrayList<ErtugrulErgulPosition> path = ErtugrulErgulPosition.getPath(button.getPoint(), left_point);
-                for (ErtugrulErgulPosition point : path) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), left_point);
+                for (Position point : path) {
                     buttons[point.getX()][point.getY()].setHasCircle(true, true);
                     buttons[point.getX()][point.getY()].setEnabled(false);
                 }
                 moved = true;
             }
             
-            ErtugrulErgulPosition right_point = checkRight(button, ErtugrulErgulGameState.Turn.WHITE);
+            Position right_point = checkRight(button, GameState.Turn.WHITE);
             if (right_point != null) {
-                ArrayList<ErtugrulErgulPosition> path = ErtugrulErgulPosition.getPath(button.getPoint(), right_point);
-                for (ErtugrulErgulPosition point : path) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), right_point);
+                for (Position point : path) {
                     buttons[point.getX()][point.getY()].setHasCircle(true, true);
                     buttons[point.getX()][point.getY()].setEnabled(false);
                 }
                 moved = true;
             }
             
-            ErtugrulErgulPosition upper_left_point = checkUpperLeft(button, ErtugrulErgulGameState.Turn.WHITE);
+            Position upper_left_point = checkUpperLeft(button, GameState.Turn.WHITE);
             if (upper_left_point != null) {
-                ArrayList<ErtugrulErgulPosition> path = ErtugrulErgulPosition.getPath(button.getPoint(), upper_left_point);
-                for (ErtugrulErgulPosition point : path) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), upper_left_point);
+                for (Position point : path) {
                     buttons[point.getX()][point.getY()].setHasCircle(true, true);
                     buttons[point.getX()][point.getY()].setEnabled(false);
                 }
                 moved = true;
             }
             
-            ErtugrulErgulPosition upper_right_point = checkUpperRight(button, ErtugrulErgulGameState.Turn.WHITE);
+            Position upper_right_point = checkUpperRight(button, GameState.Turn.WHITE);
             if (upper_right_point != null) {
-                ArrayList<ErtugrulErgulPosition> path = ErtugrulErgulPosition.getPath(button.getPoint(), upper_right_point);
-                for (ErtugrulErgulPosition point : path) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), upper_right_point);
+                for (Position point : path) {
                     buttons[point.getX()][point.getY()].setHasCircle(true, true);
                     buttons[point.getX()][point.getY()].setEnabled(false);
                 }
                 moved = true;
             }
             
-            ErtugrulErgulPosition lower_left_point = checkLowerLeft(button, ErtugrulErgulGameState.Turn.WHITE);
+            Position lower_left_point = checkLowerLeft(button, GameState.Turn.WHITE);
             if (lower_left_point != null) {
-                ArrayList<ErtugrulErgulPosition> path = ErtugrulErgulPosition.getPath(button.getPoint(), lower_left_point);
-                for (ErtugrulErgulPosition point : path) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), lower_left_point);
+                for (Position point : path) {
                     buttons[point.getX()][point.getY()].setHasCircle(true, true);
                     buttons[point.getX()][point.getY()].setEnabled(false);
                 }
                 moved = true;
             }
             
-            ErtugrulErgulPosition lower_right_point = checkLowerRight(button, ErtugrulErgulGameState.Turn.WHITE);
+            Position lower_right_point = checkLowerRight(button, GameState.Turn.WHITE);
             if (lower_right_point != null) {
-                ArrayList<ErtugrulErgulPosition> path = ErtugrulErgulPosition.getPath(button.getPoint(), lower_right_point);
-                for (ErtugrulErgulPosition point : path) {
+                ArrayList<Position> path = Position.getPath(button.getPoint(), lower_right_point);
+                for (Position point : path) {
                     buttons[point.getX()][point.getY()].setHasCircle(true, true);
                     buttons[point.getX()][point.getY()].setEnabled(false);
                 }
                 moved = true;
             }
             if (moved) {    
-                if (testPlayerTurn(ErtugrulErgulGameState.Turn.BLACK)) {
-                    state.setCurrentPlayer(ErtugrulErgulGameState.Turn.BLACK);
+                if (testPlayerTurn(GameState.Turn.BLACK)) {
+                    state.setCurrentPlayer(GameState.Turn.BLACK);
                     playerTurnLabel.setText("Black");
-                } else if (!testPlayerTurn(ErtugrulErgulGameState.Turn.BLACK) && testPlayerTurn(ErtugrulErgulGameState.Turn.WHITE)) {
+                } else if (!testPlayerTurn(GameState.Turn.BLACK) && testPlayerTurn(GameState.Turn.WHITE)) {
                     JOptionPane.showMessageDialog(this, "Opponent player doesn't have a valid move. Turn will not change",
                             "Player keeps turn", JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     JOptionPane.showMessageDialog(this, "Players don't have valid moves. Ending the game with current scores...", "Game Over",
                             JOptionPane.INFORMATION_MESSAGE);
-                    int black_score = getColoredPoints(ErtugrulErgulGameState.Turn.BLACK);
-                    int white_score = getColoredPoints(ErtugrulErgulGameState.Turn.WHITE);
-                    ErtugrulErgulDatabase.registerScore(state.getBlackPlayer(), black_score);
-                    ErtugrulErgulDatabase.registerScore(state.getWhitePlayer(), white_score);
+                    int black_score = getColoredPoints(GameState.Turn.BLACK);
+                    int white_score = getColoredPoints(GameState.Turn.WHITE);
+                    Database.registerScore(state.getBlackPlayer(), black_score);
+                    Database.registerScore(state.getWhitePlayer(), white_score);
                 }
             } else {
                 JOptionPane.showMessageDialog(this, "You can't play that square!",
@@ -507,15 +507,15 @@ public class ErtugrulErgulGameScene extends javax.swing.JFrame {
         
     }
     
-    private ErtugrulErgulPosition checkUp(ErtugrulErgulSquareButton button, ErtugrulErgulGameState.Turn player) {
+    private Position checkUp(SquareButton button, GameState.Turn player) {
         int x = button.getPoint().getX();
         int y = button.getPoint().getY();
         
-        ErtugrulErgulSquareButton last_button = null;    
+        SquareButton last_button = null;    
         // The stone shouldn't be in the uppermost row.
         if (y != 0) {
             // Eğer oyuncu siyah ise...
-            if (player == ErtugrulErgulGameState.Turn.BLACK) {
+            if (player == GameState.Turn.BLACK) {
                 // Matrix is iterated downwards in y-axis while x-axis is constant
                 for (int i = y - 1; i >= 0; i--) {
                     last_button = buttons[x][i];
@@ -550,13 +550,13 @@ public class ErtugrulErgulGameScene extends javax.swing.JFrame {
     }
     
     // Difference from checkUp is that stone shouldn't be in lowermost row and matrix is iterated downwards
-    private ErtugrulErgulPosition checkDown(ErtugrulErgulSquareButton button, ErtugrulErgulGameState.Turn player) {
+    private Position checkDown(SquareButton button, GameState.Turn player) {
         int x = button.getPoint().getX();
         int y = button.getPoint().getY();
         
-        ErtugrulErgulSquareButton last_button = null;
+        SquareButton last_button = null;
         if (y != board_size - 1) {
-            if (player == ErtugrulErgulGameState.Turn.BLACK) {
+            if (player == GameState.Turn.BLACK) {
                 for (int i = y + 1; i < board_size; i++) {
                     last_button = buttons[x][i];
                     int color = last_button.isFilled();
@@ -589,13 +589,13 @@ public class ErtugrulErgulGameScene extends javax.swing.JFrame {
     
     
     // Stone shouldn't be in leftmost column and matrix is iterated to the left while y-axis is constant.
-    private ErtugrulErgulPosition checkLeft(ErtugrulErgulSquareButton button, ErtugrulErgulGameState.Turn player) {
+    private Position checkLeft(SquareButton button, GameState.Turn player) {
         int x = button.getPoint().getX();
         int y = button.getPoint().getY();
         
-        ErtugrulErgulSquareButton last_button = null;
+        SquareButton last_button = null;
         if (x != 0) {
-            if (player == ErtugrulErgulGameState.Turn.BLACK) {
+            if (player == GameState.Turn.BLACK) {
                 for (int i = x - 1; i >= 0; i--) {
                     last_button = buttons[i][y];
                     int color = last_button.isFilled();
@@ -627,13 +627,13 @@ public class ErtugrulErgulGameScene extends javax.swing.JFrame {
     }
     
     // y-axis is constant and matrix is iterated to the right. Stone shouldn't be in rightmost column.
-    private ErtugrulErgulPosition checkRight(ErtugrulErgulSquareButton button, ErtugrulErgulGameState.Turn player) {
+    private Position checkRight(SquareButton button, GameState.Turn player) {
         int x = button.getPoint().getX();
         int y = button.getPoint().getY();
         
-        ErtugrulErgulSquareButton last_button = null;
+        SquareButton last_button = null;
         if (x != board_size - 1) {
-            if (player == ErtugrulErgulGameState.Turn.BLACK) {
+            if (player == GameState.Turn.BLACK) {
                 for (int i = x + 1; i < board_size; i++) {
                     last_button = buttons[i][y];
                     int color = last_button.isFilled();
@@ -666,13 +666,13 @@ public class ErtugrulErgulGameScene extends javax.swing.JFrame {
     
     
     // Matrix is iterated upwards and to the left. Stone shouldn't be in leftmost-highest position
-    private ErtugrulErgulPosition checkUpperLeft(ErtugrulErgulSquareButton button, ErtugrulErgulGameState.Turn player) {
+    private Position checkUpperLeft(SquareButton button, GameState.Turn player) {
         int x = button.getPoint().getX();
         int y = button.getPoint().getY();
         
-        ErtugrulErgulSquareButton last_button = null;
+        SquareButton last_button = null;
         if (x != 0 && y !=0) {
-            if (player == ErtugrulErgulGameState.Turn.BLACK) {
+            if (player == GameState.Turn.BLACK) {
                 for (int i = x - 1, j = y - 1; i >= 0 && j >= 0; i--, j--) {
                     last_button = buttons[i][j];
                     int color = last_button.isFilled();
@@ -704,13 +704,13 @@ public class ErtugrulErgulGameScene extends javax.swing.JFrame {
     }
     
     // Matrix is iterated upwards and to the right. Stone shouldn't be in rightmost-highest position
-    private ErtugrulErgulPosition checkUpperRight(ErtugrulErgulSquareButton button, ErtugrulErgulGameState.Turn player) {
+    private Position checkUpperRight(SquareButton button, GameState.Turn player) {
         int x = button.getPoint().getX();
         int y = button.getPoint().getY();
         
-        ErtugrulErgulSquareButton last_button = null;
+        SquareButton last_button = null;
         if (x != board_size - 1 && y != 0) {
-            if (player == ErtugrulErgulGameState.Turn.BLACK) {
+            if (player == GameState.Turn.BLACK) {
                 for (int i = x + 1, j = y - 1; i >= 0 && j < board_size; i++, j--) {
                     last_button = buttons[i][j];
                     int color = last_button.isFilled();
@@ -742,13 +742,13 @@ public class ErtugrulErgulGameScene extends javax.swing.JFrame {
     }
     
     // Matrix is iterated downwars and to the right. Stone shouldn't be in rightmost-lowest position
-    private ErtugrulErgulPosition checkLowerRight(ErtugrulErgulSquareButton button, ErtugrulErgulGameState.Turn player) {
+    private Position checkLowerRight(SquareButton button, GameState.Turn player) {
         int x = button.getPoint().getX();
         int y = button.getPoint().getY();
         
-        ErtugrulErgulSquareButton last_button = null;
+        SquareButton last_button = null;
         if (y != board_size - 1) {
-            if (player == ErtugrulErgulGameState.Turn.BLACK) {
+            if (player == GameState.Turn.BLACK) {
                 for (int i = x + 1, j = y + 1; i < board_size && j < board_size; i++, j++) {
                     last_button = buttons[i][j];
                     int color = last_button.isFilled();
@@ -780,13 +780,13 @@ public class ErtugrulErgulGameScene extends javax.swing.JFrame {
     }
     
     // Matrix is iterated downwards and to the left. Stone shouldn't be in leftmost-lowest position
-    private ErtugrulErgulPosition checkLowerLeft(ErtugrulErgulSquareButton button, ErtugrulErgulGameState.Turn player) {
+    private Position checkLowerLeft(SquareButton button, GameState.Turn player) {
         int x = button.getPoint().getX();
         int y = button.getPoint().getY();
         
-        ErtugrulErgulSquareButton last_button;
+        SquareButton last_button;
         if (y != board_size - 1) {
-            if (player == ErtugrulErgulGameState.Turn.BLACK) {
+            if (player == GameState.Turn.BLACK) {
                 for (int i = x - 1, j = y + 1; i >= 0 && j < board_size; i--, j++) {
                     last_button = buttons[i][j];
                     int color = last_button.isFilled();
@@ -818,10 +818,10 @@ public class ErtugrulErgulGameScene extends javax.swing.JFrame {
     }
     
     // Player is tested if they can make a move
-    private boolean testPlayerTurn(ErtugrulErgulGameState.Turn player) {
+    private boolean testPlayerTurn(GameState.Turn player) {
         for (int i = 0; i < board_size; i++) {
             for (int j = 0; j < board_size; j++) {
-                ErtugrulErgulSquareButton button = buttons[i][j];
+                SquareButton button = buttons[i][j];
                 if (checkUp(button, player) != null || checkDown(button, player) != null
                         || checkLeft(button, player) != null || checkRight(button, player) != null
                         || checkUpperLeft(button, player) != null || checkUpperRight(button, player) != null
@@ -834,10 +834,10 @@ public class ErtugrulErgulGameScene extends javax.swing.JFrame {
     }
     
     // Black and white score counts are retrieved for scores
-    private int getColoredPoints(ErtugrulErgulGameState.Turn player) {
+    private int getColoredPoints(GameState.Turn player) {
         int score = 0;
         
-        if (player == ErtugrulErgulGameState.Turn.BLACK) {
+        if (player == GameState.Turn.BLACK) {
             for (int i = 0; i < board_size; i++) {
                 for (int j = 0; j < board_size; j++) {
                     int color = buttons[i][j].isFilled();
@@ -859,8 +859,8 @@ public class ErtugrulErgulGameScene extends javax.swing.JFrame {
         return score;
     }
     
-    private ErtugrulErgulGameState state;
-    private ErtugrulErgulSquareButton[][] buttons;
+    private GameState state;
+    private SquareButton[][] buttons;
     private int board_size;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel controlPanel;

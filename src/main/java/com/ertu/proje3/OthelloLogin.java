@@ -11,12 +11,12 @@ import javax.swing.JOptionPane;
  *
  * @author ergul
  */
-public class ErtugrulErgulOthelloLogin extends javax.swing.JFrame {
+public class OthelloLogin extends javax.swing.JFrame {
 
     /**
      * Creates new form OthelloLogin
      */
-    public ErtugrulErgulOthelloLogin() {
+    public OthelloLogin() {
         initComponents();
     }
 
@@ -183,7 +183,7 @@ public class ErtugrulErgulOthelloLogin extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void loginRedirectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginRedirectButtonActionPerformed
-        ErtugrulErgulOthelloRegister register_dialog = new ErtugrulErgulOthelloRegister(this, true);
+        OthelloRegister register_dialog = new OthelloRegister(this, true);
         register_dialog.setVisible(true);
     }//GEN-LAST:event_loginRedirectButtonActionPerformed
 
@@ -202,21 +202,21 @@ public class ErtugrulErgulOthelloLogin extends javax.swing.JFrame {
         }
         
         // If credentials are invalid, a warning is shown. Otherwise, player classes are created
-        ErtugrulErgulPlayer first_player = ErtugrulErgulDatabase.login(user1EmailTF.getText(), user1PasswordPF.getPassword());
+        Player first_player = Database.login(user1EmailTF.getText(), user1PasswordPF.getPassword());
         if (first_player == null) {
             JOptionPane.showMessageDialog(this, "User 1's credentials do not exist.",
                     "Invalid User", JOptionPane.WARNING_MESSAGE);
             return;
         }
         
-        ErtugrulErgulPlayer second_player = ErtugrulErgulDatabase.login(user2EmailTF.getText(), user2PasswordPF.getPassword());
+        Player second_player = Database.login(user2EmailTF.getText(), user2PasswordPF.getPassword());
         if (second_player == null) {
             JOptionPane.showMessageDialog(this, "User 2's credentials do not exist.",
                     "Invalid User", JOptionPane.WARNING_MESSAGE);
         }
         
         // ...and game begins
-        ErtugrulErgulGameScene game = new ErtugrulErgulGameScene(first_player, second_player);
+        GameScene game = new GameScene(first_player, second_player);
         game.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_loginButtonActionPerformed
@@ -228,20 +228,20 @@ public class ErtugrulErgulOthelloLogin extends javax.swing.JFrame {
         try {
             javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(ErtugrulErgulOthelloLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(OthelloLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(ErtugrulErgulOthelloLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(OthelloLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(ErtugrulErgulOthelloLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(OthelloLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(ErtugrulErgulOthelloLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(OthelloLogin.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new ErtugrulErgulOthelloLogin().setVisible(true);
+                new OthelloLogin().setVisible(true);
             }
         });
     }

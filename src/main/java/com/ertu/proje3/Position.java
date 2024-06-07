@@ -11,11 +11,11 @@ import java.util.ArrayList;
  * @author ergul
  */
 
-public class ErtugrulErgulPosition {
+public class Position {
     private int x;
     private int y;
     
-    public ErtugrulErgulPosition(int x, int y) {
+    public Position(int x, int y) {
         this.x = x;
         this.y = y;
     }
@@ -29,15 +29,15 @@ public class ErtugrulErgulPosition {
     }
     
     // A line is created between two points and all the points on the line is returned to the backend
-    public static ArrayList<ErtugrulErgulPosition> getPath(ErtugrulErgulPosition first, ErtugrulErgulPosition last) {
+    public static ArrayList<Position> getPath(Position first, Position last) {
         // Eğer x noktaları eşitse bu bir y-doğrusu demektir. y noktaları arasındaki mesafe alınır,
         // mesafe kullanılarak aradaki taşlar doğruya eklenir.
         if (first.getX() == last.getX()) {
             int diff = Math.abs(first.getY() - last.getY());
             int index = Math.max(first.getY(), last.getY());
-            ArrayList<ErtugrulErgulPosition> path = new ArrayList<>(diff + 1);
+            ArrayList<Position> path = new ArrayList<>(diff + 1);
             while (diff >= 0) {
-                path.add(new ErtugrulErgulPosition(first.getX(), index - diff));
+                path.add(new Position(first.getX(), index - diff));
                 diff--;
             }
             return path;
@@ -45,9 +45,9 @@ public class ErtugrulErgulPosition {
         } else if (first.getY() == last.getY()) {
             int diff = Math.abs(first.getX() - last.getX());
             int index = Math.max(first.getX(), last.getX());
-            ArrayList<ErtugrulErgulPosition> path = new ArrayList<>(diff + 1);
+            ArrayList<Position> path = new ArrayList<>(diff + 1);
             while (diff >= 0) {
-                path.add(new ErtugrulErgulPosition(index - diff, first.getY()));
+                path.add(new Position(index - diff, first.getY()));
                 diff--;
             }
             return path;
@@ -69,17 +69,17 @@ public class ErtugrulErgulPosition {
             }
             // If it is, then theoretical cursor moves downwards and to the right
             if (x1_is_lower) {
-                ArrayList<ErtugrulErgulPosition> path = new ArrayList<>(diff + 1);
+                ArrayList<Position> path = new ArrayList<>(diff + 1);
                 while (diff >= 0) {
-                    path.add(new ErtugrulErgulPosition(x_index + diff, y_index - diff));
+                    path.add(new Position(x_index + diff, y_index - diff));
                     diff--;
                 }
                 return path;
             // If it isn't, then downwards and to the left
             } else {
-                ArrayList<ErtugrulErgulPosition> path = new ArrayList<>(diff + 1);
+                ArrayList<Position> path = new ArrayList<>(diff + 1);
                 while (diff >= 0) {
-                    path.add(new ErtugrulErgulPosition(x_index - diff, y_index - diff));
+                    path.add(new Position(x_index - diff, y_index - diff));
                     diff--;
                 }
                 return path;

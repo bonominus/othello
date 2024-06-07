@@ -17,12 +17,12 @@ import javax.swing.table.TableColumnModel;
  *
  * @author ergul
  */
-public class ErtugrulErgulScoreBoard extends javax.swing.JDialog {
+public class ScoreBoard extends javax.swing.JDialog {
 
     /**
      * Creates new form ScoreBoard
      */
-    public ErtugrulErgulScoreBoard(java.awt.Frame parent, boolean modal, ArrayList<ErtugrulErgulScore> scores) {
+    public ScoreBoard(java.awt.Frame parent, boolean modal, ArrayList<Score> scores) {
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(parent);
@@ -138,7 +138,7 @@ public class ErtugrulErgulScoreBoard extends javax.swing.JDialog {
                     JOptionPane.PLAIN_MESSAGE);
             if (result == JOptionPane.OK_OPTION) {
                 // The user class is retrieved
-                ErtugrulErgulPlayer prompted_user = ErtugrulErgulDatabase.login(emailTF.getText(), passwordPF.getPassword());
+                Player prompted_user = Database.login(emailTF.getText(), passwordPF.getPassword());
                 if (prompted_user.getUniqueId().equals(uuid)) {
                     // If UUIDs match, then the user is indeed the performer of the score.
                     // Row is deleted from the table.

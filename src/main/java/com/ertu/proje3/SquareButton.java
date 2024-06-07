@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class ErtugrulErgulSquareButton extends JButton {
+public class SquareButton extends JButton {
     private static final Color LIGHT_BROWN = new Color(190, 160, 120);
     private static final Color LIGHTER_BROWN = new Color(220, 190, 150);
     private static final int DEFAULT_SIZE = 72;
@@ -13,13 +13,13 @@ public class ErtugrulErgulSquareButton extends JButton {
     private boolean hasCircle;
     private boolean circleIsWhite;
     
-    private ErtugrulErgulPosition point;
+    private Position point;
     
-    public ErtugrulErgulSquareButton() {
+    public SquareButton() {
         this(DEFAULT_SIZE);
     }
     
-    public ErtugrulErgulSquareButton(int size) {
+    public SquareButton(int size) {
         hasCircle = false;
         setPreferredSize(new Dimension(size, size));
         addMouseListener(new MouseAdapter() {
@@ -49,16 +49,16 @@ public class ErtugrulErgulSquareButton extends JButton {
         setBackground(LIGHT_BROWN);
     }
 
-    public ErtugrulErgulPosition getPoint() {
+    public Position getPoint() {
         return point;
     }
 
-    public void setPoint(ErtugrulErgulPosition point) {
+    public void setPoint(Position point) {
         this.point = point;
     }
     
     public void setPoint(int x, int y) {
-        this.point = new ErtugrulErgulPosition(x, y);
+        this.point = new Position(x, y);
     }
     
     @Override
